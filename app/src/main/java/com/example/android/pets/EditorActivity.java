@@ -15,10 +15,13 @@
  */
 package com.example.android.pets;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +29,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.android.pets.data.PetContract;
 import com.example.android.pets.data.PetContract.PetEntry;
@@ -114,13 +118,55 @@ public class EditorActivity extends AppCompatActivity {
         return true;
     }
 
+    private PetDbHelper mDbHelper;
+
+    /**
+     * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
+     */
+    public void insertPet() {
+        Log.d("Before", "Yup");
+        PetDbHelper mDbHelper = new PetDbHelper(this);
+        // Gets the data repository in write mode
+        SQLiteDatabase writableDatabase = mDbHelper.getWritableDatabase();
+        Log.d("After", "Yup");
+        String petName = mNameEditText.getText().toString().trim();
+
+        String petGenderString = mGenderSpinner.getSelectedItem().toString();
+        if(petGenderString == "Male"){ mGender = PetEntry.GENDER_MALE; }
+        if(petGenderString == "Female"){ mGender = PetEntry.GENDER_FEMALE; }
+        if(petGenderString == "Unknown"){ mGender = PetEntry.GENDER_UNKNOWN; }
+
+        String petBreed = mBreedEditText.getText().toString().trim();
+
+        String petWeightString = mWeightEditText.getText().toString().trim();
+        int petWeight = Integer.parseInt(petWeightString);
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(PetEntry.COLUMN_PET_NAME, petName);
+        values.put(PetEntry.COLUMN_PET_GENDER, mGender);
+        values.put(PetEntry.COLUMN_PET_BREED, petBreed);
+        values.put(PetEntry.COLUMN_PET_WEIGHT, petWeight);
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = writableDatabase.insert(PetEntry.TABLE_NAME, null, values);
+
+        if (newRowId == -1 ){
+            Toast.makeText(this, "Error with saving pet.", Toast.LENGTH_SHORT);
+        }
+        else {
+            Toast.makeText(this, "Pet saved with row id: " + newRowId, Toast.LENGTH_SHORT);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Do nothing for now
+                insertPet();
+                finish();
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
