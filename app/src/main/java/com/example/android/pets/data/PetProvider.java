@@ -1,10 +1,11 @@
-package com.example.android.pets;
+package com.example.android.pets.data;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.Settings;
+
+import com.example.android.pets.PetDbHelper;
 
 /**
  * {@link ContentProvider} for Pets app.
@@ -21,7 +22,6 @@ public class PetProvider extends ContentProvider {
      */
     @Override
     public boolean onCreate() {
-        // TODO: Create and initialize a PetDbHelper object to gain access to the pets database.
         // Make sure the variable is a global variable, so it can be referenced from other
         // ContentProvider methods.
         mPetDbHelper = new PetDbHelper(getContext());
