@@ -17,6 +17,7 @@ package com.example.android.pets;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -118,44 +119,37 @@ public class EditorActivity extends AppCompatActivity {
         return true;
     }
 
-    private PetDbHelper mDbHelper;
-
     /**
-     * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
+     * Get user input from editor and save new pet into database.
      */
-    public void insertPet() {
-        Log.d("Before", "Yup");
-        PetDbHelper mDbHelper = new PetDbHelper(this);
-        // Gets the data repository in write mode
-        SQLiteDatabase writableDatabase = mDbHelper.getWritableDatabase();
-        Log.d("After", "Yup");
-        String petName = mNameEditText.getText().toString().trim();
+    private void insertPet() {
+        // Read from input fields
+        // Use trim to eliminate leading or trailing white space
+        String nameString = mNameEditText.getText().toString().trim();
+        String breedString = mBreedEditText.getText().toString().trim();
+        String weightString = mWeightEditText.getText().toString().trim();
+        int weight = Integer.parseInt(weightString);
 
-        String petGenderString = mGenderSpinner.getSelectedItem().toString();
-        if(petGenderString == "Male"){ mGender = PetEntry.GENDER_MALE; }
-        if(petGenderString == "Female"){ mGender = PetEntry.GENDER_FEMALE; }
-        if(petGenderString == "Unknown"){ mGender = PetEntry.GENDER_UNKNOWN; }
-
-        String petBreed = mBreedEditText.getText().toString().trim();
-
-        String petWeightString = mWeightEditText.getText().toString().trim();
-        int petWeight = Integer.parseInt(petWeightString);
-
-        // Create a new map of values, where column names are the keys
+        // Create a ContentValues object where column names are the keys,
+        // and pet attributes from the editor are the values.
         ContentValues values = new ContentValues();
-        values.put(PetEntry.COLUMN_PET_NAME, petName);
+        values.put(PetEntry.COLUMN_PET_NAME, nameString);
+        values.put(PetEntry.COLUMN_PET_BREED, breedString);
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
-        values.put(PetEntry.COLUMN_PET_BREED, petBreed);
-        values.put(PetEntry.COLUMN_PET_WEIGHT, petWeight);
+        values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
 
-        // Insert the new row, returning the primary key value of the new row
-        long newRowId = writableDatabase.insert(PetEntry.TABLE_NAME, null, values);
+        // Insert a new pet into the provider, returning the content URI for the new pet.
+        Uri newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
 
-        if (newRowId == -1 ){
-            Toast.makeText(this, "Error with saving pet.", Toast.LENGTH_SHORT);
-        }
-        else {
-            Toast.makeText(this, "Pet saved with row id: " + newRowId, Toast.LENGTH_SHORT);
+        // Show a toast message depending on whether or not the insertion was successful
+        if (newUri == null) {
+            // If the new content URI is null, then there was an error with insertion.
+            Toast.makeText(this, getString(R.string.editor_insert_pet_failed),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            // Otherwise, the insertion was successful and we can display a toast.
+            Toast.makeText(this, getString(R.string.editor_insert_pet_successful),
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
