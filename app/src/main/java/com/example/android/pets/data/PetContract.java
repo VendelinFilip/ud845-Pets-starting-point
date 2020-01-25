@@ -2,6 +2,7 @@ package com.example.android.pets.data;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.content.ContentResolver;
 
 /*** API Contract for the Pets app.*/
 public final class PetContract {
@@ -74,6 +75,14 @@ public final class PetContract {
         public static final int GENDER_UNKNOWN = 0;
         public static final int GENDER_MALE = 1;
         public static final int GENDER_FEMALE = 2;
+
+        /*** The MIME type of a {@link #CONTENT_URI} subdirectory of a single
+         * person.*/
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/contact";
+
+        /*** The MIME type of {@link #CONTENT_URI} providing a directory of
+         * people.*/
+        public static final String CONTENT_LIST_TYPE = "vnd.android.cursor.dir/contact";
     }
 
 }
