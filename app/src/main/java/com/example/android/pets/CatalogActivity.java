@@ -14,8 +14,10 @@
  * limitations under the License.
  */package com.example.android.pets;
 
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -59,8 +61,8 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
-                startActivity(intent);
+                Intent editorIntent = new Intent(CatalogActivity.this, EditorActivity.class);
+                startActivity(editorIntent);
             }
         });
         // Find the ListView which will be populated with the pet data
@@ -72,6 +74,16 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
         adapter = new PetCursorAdapter(this, null);
         petListView.setAdapter(adapter);
+
+        petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent editorIntent = new Intent(CatalogActivity.this, EditorActivity.class);
+                Uri currentPetUri = ContentUris.withAppendedId(PetEntry.CONTENT_URI, id);
+                editorIntent.setData(currentPetUri);
+                startActivity(editorIntent);
+            }
+        });
 
         getLoaderManager().initLoader(PET_LOADER, null, this);
     }
