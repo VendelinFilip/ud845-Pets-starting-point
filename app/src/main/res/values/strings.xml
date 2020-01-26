@@ -73,4 +73,7 @@
 
     <string name="editPet">Edit pet</string>
     <string name="addPet">Add pet</string>
+
+    <string name="editor_update_pet_failed">Error with updating pet</string>
+    <string name="editor_update_pet_successful">Pet updated</string>
 </resources>
