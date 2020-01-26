@@ -99,7 +99,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         adapter = new PetCursorAdapter(this, null);
 
-        getLoaderManager().initLoader(PET_LOADER, null, this);
+        if (currentPetUri != null){
+            getLoaderManager().initLoader(PET_LOADER, null, this);
+        }
     }
 
     /**
